@@ -28,16 +28,11 @@ public class Crawler
         _crawlerStatus = new CrawlerStatus { Completed = _crawlerStatus.Completed + 1 };
         StatusChanged?.Invoke(this, _crawlerStatus);
         PageScraped?.Invoke(this, page);
-        
-        
 
-        foreach (var link in page.ListLinkedResources())
-        {
-            if (_pathsCrawled.Any(x => x == link)) 
-                continue;
-         
+        var links = page.ListLinkedResources().Where(link => _pathsCrawled.All(x => x != link));
+
+        foreach (var link in links)
             await ScapePage(link);
-        }
     }
 
     public async Task BeginCrawling()
