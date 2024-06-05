@@ -29,16 +29,12 @@ public class Scraper
             return;
         }
         
-        if (OnSuccess == null)
-            return;
-
-        
         IWebEntity entity = response.Content.Headers.ContentType?.MediaType switch
         {
             "text/html" => new HtmlPage(bytes, absoluteUri),
             _ => new File(bytes, absoluteUri)
         };
         
-        await OnSuccess.Invoke(entity);
+        await OnSuccess?.Invoke(entity)!;
     }
 }

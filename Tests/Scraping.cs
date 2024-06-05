@@ -2,6 +2,7 @@
 using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using LeetScraper;
 using LeetScraper.WebEntities;
 using File = LeetScraper.WebEntities.File;
@@ -40,24 +41,28 @@ public class Scraping
     {
         var baseAddress = new Uri("https://localhost");
         var imageAddress = new Uri(baseAddress, "image.jpg");
+        var bytes = new Byte[] { 0, 0, 0, 0 };
+        
         
         var arrange = Arrange.Dependencies(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
             
-            HttpClientConfig.Create(imageAddress, response => response.Content = new ByteArrayContent(Array.Empty<byte>())));
+            HttpClientConfig.Create(imageAddress, response => response.Content = new ByteArrayContent(bytes)));
         });
 
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
         var scraper = new Scraper(httpClient);
         var scraped = default(IWebEntity);
-        scraper.OnSuccess +=  (htmlPage) =>
+        scraper.OnSuccess +=  (entity) =>
         {
-            scraped = htmlPage;
+            scraped = entity;
             return Task.CompletedTask;
         };
         await scraper.Scrape("image.jpg", CancellationToken.None);
 
         scraped.Should().BeAssignableTo<File>();
+        scraped.Bytes.Should().BeEquivalentTo(bytes, _ => new EquivalencyAssertionOptions<byte>().WithStrictOrdering());
+        scraped.Uri.Should().Be(imageAddress);
     }
 }
