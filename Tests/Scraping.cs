@@ -6,7 +6,7 @@ using FluentAssertions;
 namespace Tests;
 
 [TestFixture]
-public class ScrapHtmlPage
+public class Scraping
 {
     [Test]
     public async Task Scrape()
