@@ -1,16 +1,17 @@
-using LeetScraper;
+using System.Collections.Concurrent;
+using LeetScraper.WebEntities;
 
-namespace Tests;
+namespace LeetScraper;
 
 public class Crawler
 {
     private readonly Scraper _scraper;
     private readonly CancellationToken _cancellationToken;
     private CrawlerStatus _crawlerStatus;
-    private List<string> _pathsCrawled;
+    private ConcurrentDictionary<string, bool> _pathsCrawled;
+    private object _lock = new object();
     public EventHandler<CrawlerStatus>? StatusChanged { get; set; }
-    public EventHandler<HtmlPage>? PageScraped { get; set; }
-
+    public EventHandler<IWebEntity>? Scraped { get; set; }
 
     public Crawler(Scraper scraper, CancellationToken cancellationToken)
     {
@@ -19,30 +20,44 @@ public class Crawler
         _scraper.OnSuccess += OnSuccess;
         _crawlerStatus = new CrawlerStatus()
         {
-            Completed = 0
+            Completed = 0,
+            Total = 1
         };
-        _pathsCrawled = new List<string>();
+        _pathsCrawled = new ConcurrentDictionary<string, bool>();
     }
-    private async Task OnSuccess(HtmlPage page)
+    private async Task OnSuccess(IWebEntity page)
     {
-        _crawlerStatus = new CrawlerStatus { Completed = _crawlerStatus.Completed + 1 };
+        _pathsCrawled[page.Path] = true;
+        
+        var tasks = new List<Task>();
+
+        foreach (var resource in page.ListLinkedResources())
+        {
+            if(_pathsCrawled.TryAdd(resource, false))
+                tasks.Add(ScapePage(resource));
+        }
+        
+        _crawlerStatus = new CrawlerStatus
+        {
+            Completed = _pathsCrawled.Values.Count(completed => completed),
+            Total = _pathsCrawled.Values.Count(),
+        };
+        
         StatusChanged?.Invoke(this, _crawlerStatus);
-        PageScraped?.Invoke(this, page);
+        Scraped?.Invoke(this, page);
 
-        var links = page.ListLinkedResources().Where(link => _pathsCrawled.All(x => x != link));
-
-        foreach (var link in links)
-            await ScapePage(link);
+        await Task.WhenAll(tasks);
     }
 
     public async Task BeginCrawling()
     {
-        await ScapePage("");
+        if(_pathsCrawled.TryAdd("index.html", false))
+            await ScapePage("");
     }
     
     private async Task ScapePage(string path)
     {  
-        _pathsCrawled.Add(string.IsNullOrEmpty(path) ? "index.html" : path);
+        
         await _scraper.Scrape(path, _cancellationToken);
     }
 }

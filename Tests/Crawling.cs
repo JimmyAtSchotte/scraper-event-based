@@ -1,7 +1,9 @@
-﻿using ArrangeDependencies.Autofac;
+﻿using System.Text;
+using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
 using LeetScraper;
+using LeetScraper.WebEntities;
 
 namespace Tests;
 
@@ -15,7 +17,7 @@ public class Crawling
         
         var arrange = Arrange.Dependencies(dependencies =>
         {
-            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, HttpClientConfig.Create(baseAddress, "<html></html>"));
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, HttpClientConfig.Create(baseAddress,  response => response.Content = new StringContent("<html></html>", Encoding.UTF8, "text/html")));
         });
 
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
@@ -35,8 +37,8 @@ public class Crawling
         var arrange = Arrange.Dependencies(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
-                HttpClientConfig.Create(baseAddress, "<html><body><a href=\"page2.html\"></a></body></html>"),
-                HttpClientConfig.Create(new Uri(baseAddress, "page2.html"), "<html></html>"));
+                HttpClientConfig.Create(baseAddress,  response => response.Content = new StringContent("<html><body><a href=\"page2.html\"></a></body></html>", Encoding.UTF8, "text/html")),
+                HttpClientConfig.Create(new Uri(baseAddress, "page2.html"),  response => response.Content = new StringContent("<html></html>", Encoding.UTF8, "text/html")));
         });
 
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
@@ -46,6 +48,7 @@ public class Crawling
         crawler.StatusChanged += (sender, status) => crawlerStatus = status;
         await crawler.BeginCrawling();
         crawlerStatus.Completed.Should().Be(2);
+        crawlerStatus.Total.Should().Be(2);
     }
     
     [Test]
@@ -56,8 +59,8 @@ public class Crawling
         var arrange = Arrange.Dependencies(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
-            HttpClientConfig.Create(baseAddress, "<html><body><a href=\"page2.html\"></a></body></html>"),
-            HttpClientConfig.Create(new Uri(baseAddress, "page2.html"), "<html><body><a href=\"index.html\"></a></body></html>"));
+            HttpClientConfig.Create(baseAddress, response => response.Content = new StringContent("<html><body><a href=\"page2.html\"></a></body></html>", Encoding.UTF8, "text/html")),
+            HttpClientConfig.Create(new Uri(baseAddress, "page2.html"), response => response.Content = new StringContent("<html><body><a href=\"index.html\"></a></body></html>", Encoding.UTF8, "text/html")));
         });
 
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
@@ -77,14 +80,14 @@ public class Crawling
         var arrange = Arrange.Dependencies(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
-            HttpClientConfig.Create(baseAddress, "<html><body></body></html>"));
+            HttpClientConfig.Create(baseAddress, response => response.Content = new StringContent("<html><body></body></html>", Encoding.UTF8, "text/html")));
         });
 
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
-        var htmlPage = default(HtmlPage);
-        crawler.PageScraped += (sender, page) => htmlPage = page;
+        var htmlPage = default(IWebEntity);
+        crawler.Scraped += (sender, entity) => htmlPage = entity;
         await crawler.BeginCrawling();
         htmlPage.Should().NotBeNull();
         htmlPage.Path.Should().Be("index.html");

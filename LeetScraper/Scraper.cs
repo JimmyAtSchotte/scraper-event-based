@@ -1,3 +1,6 @@
+using LeetScraper.WebEntities;
+using File = LeetScraper.WebEntities.File;
+
 namespace LeetScraper;
 
 public class Scraper
@@ -9,16 +12,24 @@ public class Scraper
         _httpClient = httpClient;
     }
 
-    public Func<HtmlPage, Task>? OnSuccess { get; set; }
+    public Func<IWebEntity, Task>? OnSuccess { get; set; }
 
     public async Task Scrape(string path, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(path, cancellationToken);
-        var htmlPage = new HtmlPage(await response.Content.ReadAsStringAsync(cancellationToken), path);
+        
+        if(!response.IsSuccessStatusCode)
+            return;
         
         if (OnSuccess == null)
             return;
-
-        await OnSuccess.Invoke(htmlPage);
+        
+        IWebEntity entity = response.Content.Headers.ContentType?.MediaType switch
+        {
+            "text/html" => new HtmlPage(await response.Content.ReadAsStringAsync(cancellationToken), path),
+            _ => new File(path)
+        };
+        
+        await OnSuccess.Invoke(entity);
     }
 }
