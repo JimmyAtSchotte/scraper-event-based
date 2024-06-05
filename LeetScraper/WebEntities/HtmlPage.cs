@@ -6,16 +6,16 @@ public class HtmlPage : IWebEntity
 {
     private readonly HtmlDocument _htmlDocument;
     
-    public HtmlPage(string html, string path)
+    public HtmlPage(string html, Uri uri)
     {
-        Path = string.IsNullOrEmpty(path) ? "index.html" : path;
+        Uri = uri.AbsolutePath.EndsWith("/") ? new Uri(uri, "index.html") : uri;
         _htmlDocument = new HtmlDocument();
         _htmlDocument.LoadHtml(html);
     }
 
-    public string Path { get; }
+    public Uri Uri { get; }
 
-    public IEnumerable<string> ListLinkedResources()
+    public IEnumerable<Uri> ListLinkedResources()
     {
         var resources = new List<string>();
         resources.AddRange(ListLinks());
@@ -23,7 +23,7 @@ public class HtmlPage : IWebEntity
         resources.AddRange(ListCss());
         resources.AddRange(ListJavascript());
         
-        return resources;
+        return resources.Select(resource => new Uri(Uri, resource));
     }
 
     private IEnumerable<string> ListLinks()

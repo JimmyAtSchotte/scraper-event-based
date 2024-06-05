@@ -23,10 +23,11 @@ public class Crawling
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
-        var crawlerStatus = default(CrawlerStatus);
-        crawler.StatusChanged += (sender, status) => crawlerStatus = status;
+        var invokes = 0;
+        crawler.StatusChanged += (sender, args) => invokes++;
         await crawler.BeginCrawling();
-        crawlerStatus.Completed.Should().Be(1);
+        crawler.Completed.Should().Be(1);
+        invokes.Should().Be(1);
     }
     
     [Test]
@@ -44,11 +45,12 @@ public class Crawling
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
-        var crawlerStatus = default(CrawlerStatus);
-        crawler.StatusChanged += (sender, status) => crawlerStatus = status;
+        var invokes = 0;
+        crawler.StatusChanged += (sender, args) => invokes++;
         await crawler.BeginCrawling();
-        crawlerStatus.Completed.Should().Be(2);
-        crawlerStatus.Total.Should().Be(2);
+        crawler.Completed.Should().Be(2);
+        crawler.Total.Should().Be(2);
+        invokes.Should().Be(2);
     }
     
     [Test]
@@ -66,10 +68,30 @@ public class Crawling
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
-        var crawlerStatus = default(CrawlerStatus);
-        crawler.StatusChanged += (sender, status) => crawlerStatus = status;
         await crawler.BeginCrawling();
-        crawlerStatus.Completed.Should().Be(2);
+        crawler.Completed.Should().Be(2);
+        crawler.Total.Should().Be(2);
+    }
+    
+    
+    [Test]
+    public async Task CrawlOnlyOnceRelativePath()
+    {
+        var baseAddress = new Uri("https://localhost");
+        
+        var arrange = Arrange.Dependencies(dependencies =>
+        {
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
+            HttpClientConfig.Create(baseAddress, response => response.Content = new StringContent("<html><body><a href=\"pages/page2.html\"></a></body></html>", Encoding.UTF8, "text/html")),
+            HttpClientConfig.Create(new Uri(baseAddress, "pages/page2.html"), response => response.Content = new StringContent("<html><body><a href=\"../index.html\"></a></body></html>", Encoding.UTF8, "text/html")));
+        });
+
+        var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
+        var scraper = new Scraper(httpClient);
+        var crawler = new Crawler(scraper, CancellationToken.None);
+        await crawler.BeginCrawling();
+        crawler.Completed.Should().Be(2);
+        crawler.Total.Should().Be(2);
     }
     
     [Test]
@@ -90,7 +112,7 @@ public class Crawling
         crawler.Scraped += (sender, entity) => htmlPage = entity;
         await crawler.BeginCrawling();
         htmlPage.Should().NotBeNull();
-        htmlPage.Path.Should().Be("index.html");
+        htmlPage.Uri.AbsolutePath.Should().Be("/index.html");
     }
     
 }

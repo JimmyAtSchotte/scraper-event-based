@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.HttpClient;
-using Castle.Core.Smtp;
 using FluentAssertions;
 using LeetScraper;
 using LeetScraper.WebEntities;

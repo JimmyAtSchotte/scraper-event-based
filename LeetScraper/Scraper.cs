@@ -23,11 +23,13 @@ public class Scraper
         
         if (OnSuccess == null)
             return;
+
+        var absoluteUri = new Uri(_httpClient.BaseAddress, path);
         
         IWebEntity entity = response.Content.Headers.ContentType?.MediaType switch
         {
-            "text/html" => new HtmlPage(await response.Content.ReadAsStringAsync(cancellationToken), path),
-            _ => new File(path)
+            "text/html" => new HtmlPage(await response.Content.ReadAsStringAsync(cancellationToken), absoluteUri),
+            _ => new File(absoluteUri)
         };
         
         await OnSuccess.Invoke(entity);

@@ -2,11 +2,11 @@ namespace LeetScraper.WebEntities;
 
 public class File : IWebEntity
 {
-    public File(string path)
+    public File(Uri uri)
     {
-        Path = path;
+        Uri = uri;
     }
-    public string Path { get; }
     
-    public IEnumerable<string> ListLinkedResources() => [];
+    public Uri Uri { get; }
+    public IEnumerable<Uri> ListLinkedResources() => [];
 }
