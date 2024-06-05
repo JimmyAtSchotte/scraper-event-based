@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Concurrent;
-using LeetScraper.WebEntities;
+using LeetScraper.Core.WebEntities;
 
-namespace LeetScraper;
+namespace LeetScraper.Core;
 
 public class Crawler
 {

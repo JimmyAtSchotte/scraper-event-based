@@ -3,8 +3,8 @@ using System.Text;
 using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
-using LeetScraper;
-using LeetScraper.WebEntities;
+using LeetScraper.Core;
+using LeetScraper.Core.WebEntities;
 
 namespace Tests;
 

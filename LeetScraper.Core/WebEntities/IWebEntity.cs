@@ -1,4 +1,4 @@
-namespace LeetScraper.WebEntities;
+namespace LeetScraper.Core.WebEntities;
 
 public interface IWebEntity
 {

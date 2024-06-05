@@ -1,8 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetScraper", "LeetScraper\LeetScraper.csproj", "{18DEF081-891B-4A41-B2C3-A5091C252282}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetScraper.Console", "LeetScraper.Console\LeetScraper.Console.csproj", "{18DEF081-891B-4A41-B2C3-A5091C252282}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{ABCB6E60-F340-4A96-BB8C-5957D0239A83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetScraper.Wpf", "LeetScraper.Wpf\LeetScraper.Wpf.csproj", "{688A5A86-6BEC-466B-B657-1FBC8BD924D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetScraper.Core", "LeetScraper.Core\LeetScraper.Core.csproj", "{E1580EF9-0D39-4137-BEE0-4E6BCE846514}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +22,13 @@ Global
 		{ABCB6E60-F340-4A96-BB8C-5957D0239A83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABCB6E60-F340-4A96-BB8C-5957D0239A83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABCB6E60-F340-4A96-BB8C-5957D0239A83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688A5A86-6BEC-466B-B657-1FBC8BD924D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{688A5A86-6BEC-466B-B657-1FBC8BD924D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{688A5A86-6BEC-466B-B657-1FBC8BD924D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{688A5A86-6BEC-466B-B657-1FBC8BD924D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1580EF9-0D39-4137-BEE0-4E6BCE846514}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1580EF9-0D39-4137-BEE0-4E6BCE846514}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1580EF9-0D39-4137-BEE0-4E6BCE846514}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1580EF9-0D39-4137-BEE0-4E6BCE846514}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

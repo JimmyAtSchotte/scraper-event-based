@@ -1,8 +1,7 @@
 using System.IO.Abstractions;
-using LeetScraper.WebEntities;
-using File = System.IO.File;
+using LeetScraper.Core.WebEntities;
 
-namespace LeetScraper;
+namespace LeetScraper.Core;
 
 public class LocalFileStorage
 {

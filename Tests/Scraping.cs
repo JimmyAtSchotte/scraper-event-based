@@ -3,9 +3,8 @@ using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
-using LeetScraper;
-using LeetScraper.WebEntities;
-using File = LeetScraper.WebEntities.File;
+using LeetScraper.Core;
+using LeetScraper.Core.WebEntities;
 
 namespace Tests;
 
@@ -61,7 +60,7 @@ public class Scraping
         };
         await scraper.Scrape("image.jpg", CancellationToken.None);
 
-        scraped.Should().BeAssignableTo<File>();
+        scraped.Should().BeAssignableTo<LeetScraper.Core.WebEntities.File>();
         scraped.Bytes.Should().BeEquivalentTo(bytes, _ => new EquivalencyAssertionOptions<byte>().WithStrictOrdering());
         scraped.Uri.Should().Be(imageAddress);
     }

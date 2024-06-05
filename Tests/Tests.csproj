@@ -21,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LeetScraper\LeetScraper.csproj" />
+      <ProjectReference Include="..\LeetScraper.Core\LeetScraper.Core.csproj" />
     </ItemGroup>
-
 </Project>

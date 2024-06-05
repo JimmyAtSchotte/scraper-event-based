@@ -1,7 +1,7 @@
-using LeetScraper.WebEntities;
-using File = LeetScraper.WebEntities.File;
+using LeetScraper.Core.WebEntities;
+using File = LeetScraper.Core.WebEntities.File;
 
-namespace LeetScraper;
+namespace LeetScraper.Core;
 
 public class Scraper
 {

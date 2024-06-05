@@ -1,7 +1,7 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
 using FluentAssertions;
-using LeetScraper;
-using LeetScraper.WebEntities;
+using LeetScraper.Core;
+using LeetScraper.Core.WebEntities;
 
 namespace Tests;
 

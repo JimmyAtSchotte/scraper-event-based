@@ -1,4 +1,4 @@
-namespace LeetScraper;
+namespace LeetScraper.Core;
 
 public enum ScrapeStatus
 {

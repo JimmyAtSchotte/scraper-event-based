@@ -1,7 +1,5 @@
-﻿using System.Text;
-using FluentAssertions;
-using LeetScraper;
-using LeetScraper.WebEntities;
+﻿using FluentAssertions;
+using LeetScraper.Core.WebEntities;
 
 namespace Tests;
 

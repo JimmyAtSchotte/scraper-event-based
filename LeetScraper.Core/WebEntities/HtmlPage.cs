@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-namespace LeetScraper.WebEntities;
+namespace LeetScraper.Core.WebEntities;
 
 public class HtmlPage : IWebEntity
 {
