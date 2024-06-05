@@ -49,7 +49,28 @@ public class Crawling
     }
     
     [Test]
-    public async Task Invoke()
+    public async Task CrawlOnlyOnce()
+    {
+        var baseAddress = new Uri("https://localhost");
+        
+        var arrange = Arrange.Dependencies(dependencies =>
+        {
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
+            HttpClientConfig.Create(baseAddress, "<html><body><a href=\"page2.html\"></a></body></html>"),
+            HttpClientConfig.Create(new Uri(baseAddress, "page2.html"), "<html><body><a href=\"index.html\"></a></body></html>"));
+        });
+
+        var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
+        var scraper = new Scraper(httpClient);
+        var crawler = new Crawler(scraper, CancellationToken.None);
+        var crawlerStatus = default(CrawlerStatus);
+        crawler.StatusChanged += (sender, status) => crawlerStatus = status;
+        await crawler.BeginCrawling();
+        crawlerStatus.Completed.Should().Be(2);
+    }
+    
+    [Test]
+    public async Task InvokePageScraped()
     {
         var baseAddress = new Uri("https://localhost");
         
@@ -66,6 +87,7 @@ public class Crawling
         crawler.PageScraped += (sender, page) => htmlPage = page;
         await crawler.BeginCrawling();
         htmlPage.Should().NotBeNull();
+        htmlPage.Path.Should().Be("index.html");
     }
     
 }

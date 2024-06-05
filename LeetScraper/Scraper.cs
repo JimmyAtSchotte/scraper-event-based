@@ -14,7 +14,7 @@ public class Scraper
     public async Task Scrape(string path, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(path, cancellationToken);
-        var htmlPage = new HtmlPage(await response.Content.ReadAsStringAsync(cancellationToken));
+        var htmlPage = new HtmlPage(await response.Content.ReadAsStringAsync(cancellationToken), path);
         
         if (OnSuccess == null)
             return;
