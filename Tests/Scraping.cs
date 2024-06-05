@@ -2,6 +2,7 @@
 using ArrangeDependencies.Autofac.HttpClient;
 using Castle.Core.Smtp;
 using FluentAssertions;
+using LeetScraper;
 
 namespace Tests;
 

@@ -1,6 +1,4 @@
-using LeetScraper;
-
-namespace Tests;
+namespace LeetScraper;
 
 public class Scraper
 {
