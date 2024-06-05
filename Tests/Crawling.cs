@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
@@ -24,7 +25,7 @@ public class Crawling
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
         var invokes = 0;
-        crawler.StatusChanged += (sender, args) => invokes++;
+        crawler.StatusChanged += () => invokes++;
         await crawler.BeginCrawling();
         crawler.Completed.Should().Be(1);
         invokes.Should().Be(1);
@@ -46,7 +47,7 @@ public class Crawling
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
         var invokes = 0;
-        crawler.StatusChanged += (sender, args) => invokes++;
+        crawler.StatusChanged += () => invokes++;
         await crawler.BeginCrawling();
         crawler.Completed.Should().Be(2);
         crawler.Total.Should().Be(2);
@@ -109,10 +110,34 @@ public class Crawling
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
         var htmlPage = default(IWebEntity);
-        crawler.Scraped += (sender, entity) => htmlPage = entity;
+        crawler.Scraped += (entity) =>
+        {
+            htmlPage = entity;
+            return Task.CompletedTask;
+        };
         await crawler.BeginCrawling();
         htmlPage.Should().NotBeNull();
         htmlPage.Uri.AbsolutePath.Should().Be("/index.html");
+    }
+    
+    
+    [Test]
+    public async Task ScrapeFailed()
+    {
+        var baseAddress = new Uri("https://localhost");
+        
+        var arrange = Arrange.Dependencies(dependencies =>
+        {
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, HttpClientConfig.Create(baseAddress, "", HttpStatusCode.NotFound));
+        });
+
+        var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
+        var scraper = new Scraper(httpClient);
+        var crawler = new Crawler(scraper, CancellationToken.None);
+        await crawler.BeginCrawling();
+        crawler.Completed.Should().Be(1);
+        crawler.Failed.Should().Be(1);
+        crawler.Total.Should().Be(1);
     }
     
 }
