@@ -8,8 +8,6 @@ var uri =  new Uri("https://books.toscrape.com/");
 using var client = new HttpClient();
 client.BaseAddress = uri;
 
-
-
 var statusDisplay = new StatusDisplay(Console.CursorTop, Console.CursorLeft);
 var fileStorage = new LocalFileStorage(new FileSystem(), uri.Host);
 var scraper = new Scraper(client);
