@@ -46,6 +46,8 @@ public class Crawler
  
         StatusChanged?.Invoke();
         Scraped?.Invoke(page);
+
+        await Task.WhenAll(tasks);
     }
 
     public async Task BeginCrawling()

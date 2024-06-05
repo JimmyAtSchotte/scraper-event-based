@@ -3,44 +3,15 @@
 using System.Diagnostics;
 using LeetScraper;
 
+var uri =  new Uri("https://books.toscrape.com/");
+
 using var client = new HttpClient();
-client.BaseAddress = new Uri("https://books.toscrape.com/");
+client.BaseAddress = uri;
 
-var monitor = new object(); 
-var cursorTop = Console.CursorTop;
-var cursorLeft = Console.CursorLeft;
-
+var statusDisplay = new StatusDisplay(Console.CursorTop, Console.CursorLeft);
+var fileStorage = new FileStorage(uri.Host);
 var scraper = new Scraper(client);
 var crawler = new Crawler(scraper, new CancellationToken());
-crawler.StatusChanged += () =>
-{
-    if (!Monitor.TryEnter(monitor)) 
-        return;
-    
-    try
-    {
-        Console.SetCursorPosition(cursorLeft, cursorTop);
-        Console.Write($"Scraped {crawler.Completed} of {crawler.Total}. Failed: {crawler.Failed}");
-    }
-    finally
-    {
-        Monitor.Exit(monitor);
-    }
-};
-crawler.Scraped += async (entity) =>
-{
-    var filePath = Path.Combine(client.BaseAddress.Host, entity.Uri.AbsolutePath.Substring(1));
-    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-    await File.WriteAllBytesAsync(filePath, entity.Bytes);
-};
-
-var stopwatch = new Stopwatch();
-stopwatch.Start();
+crawler.StatusChanged += () => statusDisplay.Print(crawler.Completed, crawler.Total, crawler.Failed);
+crawler.Scraped += async (entity) => await fileStorage.Store(entity);
 await crawler.BeginCrawling();
-stopwatch.Stop();
-
-Console.SetCursorPosition(cursorLeft, cursorTop + 1);
-Console.WriteLine($"Completed at {stopwatch.Elapsed:g}");
-
-
-
