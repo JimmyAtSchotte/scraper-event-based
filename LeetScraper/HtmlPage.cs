@@ -14,6 +14,6 @@ public class HtmlPage
 
     public IEnumerable<string> ListLinkedResources()
     {
-       return _htmlDocument.DocumentNode.SelectNodes("//a[@href]").Select(linkNode => linkNode.GetAttributeValue("href", ""));
+       return _htmlDocument.DocumentNode.SelectNodes("//a[@href]")?.Select(linkNode => linkNode.GetAttributeValue("href", "")) ?? [];
     }
 }
