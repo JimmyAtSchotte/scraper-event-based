@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Diagnostics;
+using System.IO.Abstractions;
 using LeetScraper;
 
 var uri =  new Uri("https://books.toscrape.com/");
@@ -8,8 +8,10 @@ var uri =  new Uri("https://books.toscrape.com/");
 using var client = new HttpClient();
 client.BaseAddress = uri;
 
+
+
 var statusDisplay = new StatusDisplay(Console.CursorTop, Console.CursorLeft);
-var fileStorage = new FileStorage(uri.Host);
+var fileStorage = new LocalFileStorage(new FileSystem(), uri.Host);
 var scraper = new Scraper(client);
 var crawler = new Crawler(scraper, new CancellationToken());
 crawler.StatusChanged += () => statusDisplay.Print(crawler.Completed, crawler.Total, crawler.Failed);
