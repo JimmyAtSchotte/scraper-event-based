@@ -21,7 +21,11 @@ public class Scraping
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
         var scraper = new Scraper(httpClient);
         var calls = 0;
-        scraper.OnSuccess += (sender, htmlPage) => calls++;
+        scraper.OnSuccess +=  (htmlPage) =>
+        {
+            calls++;
+            return Task.CompletedTask;
+        };
         await scraper.Scrape("", CancellationToken.None);
 
         calls.Should().Be(1);

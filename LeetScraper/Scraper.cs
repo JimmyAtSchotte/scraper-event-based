@@ -11,12 +11,16 @@ public class Scraper
         _httpClient = httpClient;
     }
 
-    public EventHandler<HtmlPage> OnSuccess { get; set; }
+    public Func<HtmlPage, Task>? OnSuccess { get; set; }
 
     public async Task Scrape(string path, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(path, cancellationToken);
         var htmlPage = new HtmlPage(await response.Content.ReadAsStringAsync(cancellationToken));
-        OnSuccess?.Invoke(this, htmlPage);
+        
+        if (OnSuccess == null)
+            return;
+
+        await OnSuccess.Invoke(htmlPage);
     }
 }
