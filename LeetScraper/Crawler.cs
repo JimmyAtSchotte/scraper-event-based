@@ -4,13 +4,6 @@ using LeetScraper.WebEntities;
 
 namespace LeetScraper;
 
-public enum ScrapeStatus
-{
-    Pending,
-    Success,
-    Failure
-}
-
 public class Crawler
 {
     private readonly Scraper _scraper;
