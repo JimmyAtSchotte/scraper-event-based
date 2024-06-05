@@ -10,7 +10,7 @@ public class FindLinks
     public void Ahref()
     {
         var htmlPage = new HtmlPage("<html><body><a href=\"page.html\">link</a>");
-        var links = htmlPage.ListLinks();
-        links.Should().HaveCount(1);
+        var resources = htmlPage.ListLinkedResources();
+        resources.Should().HaveCount(1);
     }
 }

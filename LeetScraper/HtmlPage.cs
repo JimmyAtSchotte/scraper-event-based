@@ -12,10 +12,8 @@ public class HtmlPage
         _htmlDocument.LoadHtml(html);
     }
 
-    public IEnumerable<string> ListLinks()
+    public IEnumerable<string> ListLinkedResources()
     {
-       return _htmlDocument.DocumentNode
-            .SelectNodes("//a[@href]")
-            .Select(linkNode => linkNode.GetAttributeValue("href", ""));
+       return _htmlDocument.DocumentNode.SelectNodes("//a[@href]").Select(linkNode => linkNode.GetAttributeValue("href", ""));
     }
 }
