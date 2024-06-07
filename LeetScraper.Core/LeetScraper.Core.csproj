@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+        <PackageReference Include="TestableIO.System.IO.Abstractions" Version="21.0.2" />
+        <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.0.2" />
+    </ItemGroup>
+</Project>

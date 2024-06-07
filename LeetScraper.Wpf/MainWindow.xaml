@@ -1,0 +1,23 @@
+﻿<Window x:Class="LeetScraper.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LeetScraper.Wpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <StackPanel>
+        <WrapPanel>
+            <Label x:Name="Completed" Margin="10">Completed: 0</Label>
+            <Label x:Name="Total" Margin="10">Total: 0</Label>
+            <Label x:Name="Failed" Margin="10">Failed: 0</Label>
+        </WrapPanel>
+        <ProgressBar x:Name="Progress"></ProgressBar>
+        <Button x:Name="StartScraping"
+                Click="StartScraping_OnClick"
+                Width="100" 
+                Height="30"
+                Margin="10"
+                HorizontalAlignment="Center">Start scraping</Button>
+    </StackPanel>
+</Window>
