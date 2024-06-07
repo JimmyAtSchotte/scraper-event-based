@@ -62,5 +62,5 @@ LeetScraper is a web scraper designed to scrape content from [books.toscrape.com
 ## Acknowledgments
 
 - [books.toscrape.com](https://books.toscrape.com) for providing a website to scrape.
-- [Your Name or Organization] for supporting this project.
+
 
