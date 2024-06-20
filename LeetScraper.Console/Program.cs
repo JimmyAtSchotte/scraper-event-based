@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Diagnostics;
 using System.IO.Abstractions;
 using LeetScraper;
 using LeetScraper.Core;
@@ -15,4 +16,12 @@ var scraper = new Scraper(client);
 var crawler = new Crawler(scraper, new CancellationToken());
 crawler.StatusChanged += () => statusDisplay.Print(crawler.Completed, crawler.Total, crawler.Failed);
 crawler.Scraped += async (entity) => await fileStorage.Store(entity);
+
+var stopwatch = new Stopwatch();
+stopwatch.Start();
 await crawler.BeginCrawling();
+stopwatch.Stop();
+
+Console.SetCursorPosition(0, Console.CursorTop + 1);
+Console.WriteLine($"Total time {stopwatch.Elapsed}");
+
