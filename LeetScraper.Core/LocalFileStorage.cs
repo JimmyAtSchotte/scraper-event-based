@@ -25,4 +25,14 @@ public class LocalFileStorage
         stream.Close();
         fileStream.Close();
     }
+
+    public IEnumerable<string> CachedStore()
+    {
+        if (!_fileSystem.Directory.Exists(_basePath))
+            return [];
+        
+        return _fileSystem.Directory.GetFiles(_basePath, "*", SearchOption.AllDirectories)
+            .Select(file => file.Substring(_basePath.Length + 1));
+        
+    }
 }

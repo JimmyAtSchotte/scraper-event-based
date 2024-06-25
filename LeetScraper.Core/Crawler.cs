@@ -34,14 +34,17 @@ public class Crawler
     {
         _workload[page.Uri.AbsoluteUri] = ScrapeStatus.Success;
 
-        var resources = page.ListLinkedResources();
+        StatusChanged?.Invoke();
+        Scraped?.Invoke(page);
+        
+        await QueuePages(page.ListLinkedResources());
+    }
 
+    public async Task QueuePages(IEnumerable<Uri> resources)
+    {
         var tasks = (from resource in resources
             where _workload.TryAdd(resource.AbsoluteUri, ScrapeStatus.Pending)
             select ScapePage(resource.AbsolutePath)).ToList();
-
-        StatusChanged?.Invoke();
-        Scraped?.Invoke(page);
 
         await Task.WhenAll(tasks);
     }

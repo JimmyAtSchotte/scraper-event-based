@@ -18,7 +18,14 @@ crawler.Scraped += async (entity) => await fileStorage.Store(entity);
 
 var stopwatch = new Stopwatch();
 stopwatch.Start();
-await crawler.BeginCrawling();
+
+var cachedUris = fileStorage.CachedStore().Select(path => new Uri(uri, path)).ToList();
+
+if (cachedUris.Any())
+    await crawler.QueuePages(cachedUris);
+else
+    await crawler.BeginCrawling();
+
 stopwatch.Stop();
 
 Console.SetCursorPosition(0, Console.CursorTop + 1);
