@@ -22,7 +22,7 @@ stopwatch.Start();
 var cachedUris = fileStorage.CachedStore().Select(path => new Uri(uri, path)).ToList();
 
 if (cachedUris.Any())
-    await crawler.QueuePages(cachedUris);
+    await crawler.CrawlUris(cachedUris);
 else
     await crawler.BeginCrawling();
 

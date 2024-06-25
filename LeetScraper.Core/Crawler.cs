@@ -37,10 +37,10 @@ public class Crawler
         StatusChanged?.Invoke();
         Scraped?.Invoke(page);
         
-        await QueuePages(page.ListLinkedResources());
+        await CrawlUris(page.ListLinkedResources());
     }
 
-    public async Task QueuePages(IEnumerable<Uri> resources)
+    public async Task CrawlUris(IEnumerable<Uri> resources)
     {
         var tasks = (from resource in resources
             where _workload.TryAdd(resource.AbsoluteUri, ScrapeStatus.Pending)
