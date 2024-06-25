@@ -4,8 +4,6 @@ namespace LeetScraper.Core.WebEntities;
 
 public class HtmlPage : WebEntity
 {
-    private byte[] _bytes;
-    
     private const string DefaultAttribute = "";
     
     public HtmlPage(byte[] bytes, Uri uri) : this(new MemoryStream(bytes), uri)
