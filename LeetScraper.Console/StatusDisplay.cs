@@ -1,3 +1,5 @@
+using LeetScraper.Core;
+
 public class StatusDisplay
 {
     private static object monitor = new object();
@@ -9,7 +11,7 @@ public class StatusDisplay
         _cursorLeft = cursorLeft;
     }
     
-    public void Print(int completed, int total, int failed)
+    public void Print(Crawler crawler)
     {
         if (!Monitor.TryEnter(monitor)) 
             return;
@@ -17,7 +19,7 @@ public class StatusDisplay
         try
         {
             Console.SetCursorPosition(_cursorLeft, _cursorTop);
-            Console.Write($"Scraped {completed} of {total}. Failed: {failed}");
+            Console.Write($"Scraped {crawler.Completed} of {crawler.Total}. Failed: {crawler.Failed}");
         }
         finally
         {

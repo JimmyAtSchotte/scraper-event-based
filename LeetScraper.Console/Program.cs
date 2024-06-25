@@ -14,7 +14,7 @@ var statusDisplay = new StatusDisplay(Console.CursorTop, Console.CursorLeft);
 var fileStorage = new LocalFileStorage(new FileSystem(), uri.Host);
 var scraper = new Scraper(client);
 var crawler = new Crawler(scraper, new CancellationToken());
-crawler.StatusChanged += () => statusDisplay.Print(crawler.Completed, crawler.Total, crawler.Failed);
+crawler.StatusChanged += () => statusDisplay.Print(crawler);
 crawler.Scraped += async (entity) => await fileStorage.Store(entity);
 
 var stopwatch = new Stopwatch();
