@@ -70,4 +70,33 @@ public class Scraping
         scraped.Uri.Should().Be(imageAddress);
         actualBytes.Should().BeEquivalentTo(bytes, _ => new EquivalencyAssertionOptions<byte>().WithStrictOrdering());
     }
+    
+    [Test]
+    public async Task ScrapeCss()
+    {
+        var baseAddress = new Uri("https://localhost");
+        var uri = new Uri(baseAddress, "css.css");
+        
+        var arrange = Arrange.Dependencies(dependencies =>
+        {
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
+            
+            HttpClientConfig.Create(uri, response => response.Content = new StringContent(".css {}", Encoding.UTF8, "text/css")));
+        });
+
+        var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
+        var scraper = new Scraper(httpClient);
+        var scraped = default(IWebEntity);
+        
+        scraper.OnSuccess +=  (entity) =>
+        {
+            scraped = entity;
+            return Task.CompletedTask;
+        };
+        
+        await scraper.Scrape("css.css", CancellationToken.None);
+
+        scraped.Should().BeAssignableTo<LeetScraper.Core.WebEntities.StyleSheet>();
+        scraped.Uri.Should().Be(uri);
+    }
 }

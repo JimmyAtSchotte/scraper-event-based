@@ -33,6 +33,7 @@ public class Scraper
         using IWebEntity entity = response.Content.Headers.ContentType?.MediaType switch
         {
             "text/html" => new HtmlPage(bytes, absoluteUri),
+            "text/css" => new StyleSheet(bytes, absoluteUri),
             _ => new File(bytes, absoluteUri)
         };
         

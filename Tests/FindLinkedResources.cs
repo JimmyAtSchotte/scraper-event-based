@@ -30,6 +30,15 @@ public class FindLinkedResources
         var resources = htmlPage.ListLinkedResources();
         resources.Should().HaveCount(1);
     }
+    
+    [Test]
+    public void LinkInHtmlComment()
+    {
+        var htmlPage = new HtmlPage("<html><body><!--<a href=\"page.html\">link</a>--></body></html>"u8.ToArray(),
+        new Uri("http://localhost/index.html"));
+        var resources = htmlPage.ListLinkedResources();
+        resources.Should().HaveCount(0);
+    }
 
     [Test]
     public void LinkEmptyHref()
@@ -52,7 +61,7 @@ public class FindLinkedResources
     [Test]
     public void SkipExternalLinks()
     {
-        var htmlPage = new HtmlPage("<html><body><a href=\"http://google.com\">link</a></body></html>"u8.ToArray(),
+        var htmlPage = new HtmlPage("<html><body><a href=\"http://google.com\">link</a><a href=\"//google.com\">link</a></body></html>"u8.ToArray(),
         new Uri("http://localhost/pages/index.html"));
         var resources = htmlPage.ListLinkedResources();
         resources.Should().BeEmpty();
@@ -112,4 +121,27 @@ public class FindLinkedResources
         var resources = htmlPage.ListLinkedResources();
         resources.Should().HaveCount(0);
     }
+    
+    
+    [Test]
+    public void StyleSheetUrl()
+    {
+        var htmlPage = new StyleSheet("@font-face {\n  font-family: 'Glyphicons Halflings';\n  src: url('../fonts/glyphicons-halflings-regular.eot');\n  src: url('../fonts/glyphicons-halflings-regular.eot%3F') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg') format('svg');\n}"u8.ToArray(),
+        new Uri("http://localhost/css/css.css"));
+        var resources = htmlPage.ListLinkedResources();
+        resources.Should().HaveCount(5);
+        resources.ElementAt(0).AbsolutePath.Should().Be("/fonts/glyphicons-halflings-regular.eot");
+    }
+    
+    [Test]
+    public void JavascriptDocumentWrite()
+    {
+        var htmlPage = new HtmlPage("<html><body><script>window.jQuery || document.write('<script src=\"static/oscar/js/jquery/jquery-1.9.1.min.js\"><\\/script>')</script></body></html>"u8.ToArray(),
+        new Uri("http://localhost/index.html"));
+        var resources = htmlPage.ListLinkedResources();
+        resources.Should().HaveCount(1);
+        resources.ElementAt(0).AbsolutePath.Should().Be("/static/oscar/js/jquery/jquery-1.9.1.min.js");
+    }
+    
+    
 }

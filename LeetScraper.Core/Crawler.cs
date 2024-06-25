@@ -25,7 +25,7 @@ public class Crawler
         _workload[entity.Uri.AbsoluteUri] = ScrapeStatus.Failure;
         
         StatusChanged?.Invoke();
-
+        
         return Task.CompletedTask;
     }
 

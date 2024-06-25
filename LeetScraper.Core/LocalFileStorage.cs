@@ -18,7 +18,7 @@ public class LocalFileStorage
     {
         var filePath = _fileSystem.Path.Combine(_basePath, webEntity.Uri.AbsolutePath.Substring(1));
         _fileSystem.Directory.CreateDirectory(_fileSystem.Path.GetDirectoryName(filePath));
-
+        
         await using var fileStream = _fileSystem.File.Create(filePath);
         var stream = webEntity.CreateStream();
         await stream.CopyToAsync(fileStream);

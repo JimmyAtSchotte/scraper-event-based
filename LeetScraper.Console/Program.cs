@@ -2,7 +2,6 @@
 
 using System.Diagnostics;
 using System.IO.Abstractions;
-using LeetScraper;
 using LeetScraper.Core;
 
 var uri =  new Uri("https://books.toscrape.com/");

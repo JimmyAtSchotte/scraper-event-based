@@ -1,7 +1,4 @@
-﻿using System.IO.Compression;
-using HtmlAgilityPack;
-
-namespace LeetScraper.Core.WebEntities;
+﻿namespace LeetScraper.Core.WebEntities;
 
 public abstract class WebEntity : IWebEntity
 {
@@ -17,10 +14,7 @@ public abstract class WebEntity : IWebEntity
     }
     
     public abstract IEnumerable<Uri> ListLinkedResources();
-    public Stream CreateStream()
-    {
-        return new MemoryStream(_bytes);
-    }
+    public Stream CreateStream() => new MemoryStream(_bytes);
 
     private void ReleaseUnmanagedResources()
     {
