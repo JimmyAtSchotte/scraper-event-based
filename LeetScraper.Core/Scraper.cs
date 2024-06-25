@@ -20,20 +20,20 @@ public class Scraper
         var absoluteUri = new Uri(_httpClient.BaseAddress, path);
         
         using var response = await _httpClient.GetAsync(path, cancellationToken);
-        var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
             if(OnFailure != null)
-                await OnFailure.Invoke(new FailedRequest(bytes, absoluteUri));
+                await OnFailure.Invoke(new FailedRequest(stream, absoluteUri));
             
             return;
         }
         
         using IWebEntity entity = response.Content.Headers.ContentType?.MediaType switch
         {
-            "text/html" => new HtmlPage(bytes, absoluteUri),
-            _ => new File(bytes, absoluteUri)
+            "text/html" => new HtmlPage(stream, absoluteUri),
+            _ => new File(stream, absoluteUri)
         };
         
         await OnSuccess?.Invoke(entity)!;

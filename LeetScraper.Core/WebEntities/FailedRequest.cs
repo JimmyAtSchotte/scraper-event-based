@@ -2,7 +2,7 @@
 
 public class FailedRequest : WebEntity
 {
-    public FailedRequest(byte[] bytes, Uri uri) : base(bytes, uri)
+    public FailedRequest(Stream stream, Uri uri) : base(stream, uri)
     {
         
     }

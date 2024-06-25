@@ -2,7 +2,7 @@ namespace LeetScraper.Core.WebEntities;
 
 public class File : WebEntity
 {
-    public File(byte[] bytes, Uri uri) : base(bytes, uri)
+    public File(Stream stream, Uri uri) : base(stream, uri)
     {
         
     }

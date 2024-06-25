@@ -53,15 +53,21 @@ public class Scraping
         var httpClient = arrange.Resolve<IHttpClientFactory>().CreateClient();
         var scraper = new Scraper(httpClient);
         var scraped = default(IWebEntity);
+        byte[] actualBytes = [];
+        
         scraper.OnSuccess +=  (entity) =>
         {
             scraped = entity;
+            using var ms = new MemoryStream();
+            entity.GetStream().CopyTo(ms);
+            actualBytes = ms.ToArray();
             return Task.CompletedTask;
         };
+        
         await scraper.Scrape("image.jpg", CancellationToken.None);
 
         scraped.Should().BeAssignableTo<LeetScraper.Core.WebEntities.File>();
-        scraped.Bytes.Should().BeEquivalentTo(bytes, _ => new EquivalencyAssertionOptions<byte>().WithStrictOrdering());
         scraped.Uri.Should().Be(imageAddress);
+        actualBytes.Should().BeEquivalentTo(bytes, _ => new EquivalencyAssertionOptions<byte>().WithStrictOrdering());
     }
 }

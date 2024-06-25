@@ -8,17 +8,21 @@ public class HtmlPage : WebEntity
     
     private const string DefaultAttribute = "";
     
-    public HtmlPage(byte[] bytes, Uri uri) : base(bytes, uri.AbsolutePath.EndsWith("/") ? new Uri(uri, "index.html") : uri)
+    public HtmlPage(byte[] bytes, Uri uri) : this(new MemoryStream(bytes), uri)
     {
         
     }
     
+    public HtmlPage(Stream stream, Uri uri) : base(stream, uri.AbsolutePath.EndsWith("/") ? new Uri(uri, "index.html") : uri)
+    {
+        
+    }
+    
+    
     public override IEnumerable<Uri> ListLinkedResources()
     {
-        using var stream = new MemoryStream(Bytes);
         var htmlDocument = new HtmlDocument();
-        
-        htmlDocument.Load(stream);
+        htmlDocument.Load(GetStream());
         
         var resources = new List<string>();
         resources.AddRange(ListLinks(htmlDocument));

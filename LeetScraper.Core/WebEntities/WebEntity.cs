@@ -4,20 +4,25 @@ namespace LeetScraper.Core.WebEntities;
 
 public abstract class WebEntity : IWebEntity
 {
-    private byte[] _bytes;
-    public Uri Uri { get; }
-    public byte[] Bytes => _bytes;
+    private readonly Stream _stream;
     
-    protected WebEntity(byte[] bytes, Uri uri)
+    public Uri Uri { get; }
+    
+    protected WebEntity(Stream stream, Uri uri)
     {
-        _bytes = bytes;
+        _stream = stream;
         Uri = uri;
     }
     public abstract IEnumerable<Uri> ListLinkedResources();
-    
+    public Stream GetStream()
+    {
+        _stream.Position = 0;
+        return _stream;
+    }
+
     private void ReleaseUnmanagedResources()
     {
-        _bytes = null;
+        _stream?.Dispose();
     }
 
     public void Dispose()
