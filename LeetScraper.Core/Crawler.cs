@@ -33,7 +33,7 @@ public class Crawler
     {
         _workload[page.Uri.AbsoluteUri] = ScrapeStatus.Success;
 
-        var resources = page.ListLinkedResources().OrderBy(x => x.AbsolutePath.Length).ToList();
+        var resources = page.ListLinkedResources();
 
         var tasks = (from resource in resources where _workload.TryAdd(resource.AbsoluteUri, ScrapeStatus.Pending) 
                         select ScapePage(resource.AbsolutePath)).ToList();
