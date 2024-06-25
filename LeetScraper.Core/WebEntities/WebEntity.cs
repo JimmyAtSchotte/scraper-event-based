@@ -22,6 +22,7 @@ public abstract class WebEntity : IWebEntity
 
     private void ReleaseUnmanagedResources()
     {
+        _stream?.Close();
         _stream?.Dispose();
     }
 
