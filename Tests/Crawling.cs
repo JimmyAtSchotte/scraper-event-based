@@ -27,7 +27,7 @@ public class Crawling
         var invokes = 0;
         crawler.StatusChanged += () => invokes++;
         await crawler.BeginCrawling();
-        crawler.Completed.Should().Be(1);
+        crawler.GetStatus().Completed.Should().Be(1);
         invokes.Should().Be(1);
     }
     
@@ -56,8 +56,8 @@ public class Crawling
             return Task.CompletedTask;
         };
         await crawler.BeginCrawling();
-        crawler.Completed.Should().Be(2);
-        crawler.Total.Should().Be(2);
+        crawler.GetStatus().Completed.Should().Be(2);
+        crawler.GetStatus().Total.Should().Be(2);
         invokes.Should().Be(2);
         scraped.Select(x => x.Uri).Should().Contain(new Uri(baseAddress, "index.html"));
         scraped.Select(x => x.Uri).Should().Contain(page2Uri);
@@ -79,8 +79,8 @@ public class Crawling
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
         await crawler.BeginCrawling();
-        crawler.Completed.Should().Be(2);
-        crawler.Total.Should().Be(2);
+        crawler.GetStatus().Completed.Should().Be(2);
+        crawler.GetStatus().Total.Should().Be(2);
     }
     
     
@@ -100,8 +100,8 @@ public class Crawling
         var scraper = new Scraper(httpClient);
         var crawler = new Crawler(scraper, CancellationToken.None);
         await crawler.BeginCrawling();
-        crawler.Completed.Should().Be(2);
-        crawler.Total.Should().Be(2);
+        crawler.GetStatus().Completed.Should().Be(2);
+        crawler.GetStatus().Total.Should().Be(2);
     }
     
     [Test]
@@ -149,9 +149,9 @@ public class Crawling
         await crawler.BeginCrawling();
 
         invokes.Should().Be(1);
-        crawler.Completed.Should().Be(1);
-        crawler.Failed.Should().Be(1);
-        crawler.Total.Should().Be(1);
+        crawler.GetStatus().Completed.Should().Be(1);
+        crawler.GetStatus().Failed.Should().Be(1);
+        crawler.GetStatus().Total.Should().Be(1);
     }
     
 }

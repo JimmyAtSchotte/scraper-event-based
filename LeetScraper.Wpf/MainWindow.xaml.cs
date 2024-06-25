@@ -40,11 +40,12 @@ public partial class MainWindow : Window
         {
             await Dispatcher.InvokeAsync(() =>
             {
-                Completed.Content = $"Completed: {crawler.Completed}";
-                Total.Content = $"Total: {crawler.Total}";
-                Failed.Content = $"Failed: {crawler.Failed}";
-                Progress.Maximum = crawler.Total;
-                Progress.Value = crawler.Completed;
+                var status = crawler.GetStatus();
+                Completed.Content = $"Completed: {status.Completed}";
+                Total.Content = $"Total: {status.Total}";
+                Failed.Content = $"Failed: {status.Failed}";
+                Progress.Maximum = status.Total;
+                Progress.Value = status.Completed;
             });
         };
         crawler.Scraped += async (entity) => await fileStorage.Store(entity);

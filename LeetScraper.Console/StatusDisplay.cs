@@ -18,8 +18,13 @@ public class StatusDisplay
 
         try
         {
+            var status = crawler.GetStatus();
             Console.SetCursorPosition(_cursorLeft, _cursorTop);
-            Console.Write($"Scraped {crawler.Completed} of {crawler.Total}. Failed: {crawler.Failed}");
+            Console.WriteLine($"Total:\t\t{status.Total}             ");
+            Console.WriteLine($"Scraped:\t{status.Completed}         ");
+            Console.WriteLine($"Pending:\t{status.Pending}           ");
+            Console.WriteLine($"Failed:\t\t{status.Failed}           ");
+            
         }
         finally
         {

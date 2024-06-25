@@ -10,9 +10,7 @@ public class Crawler
     private ConcurrentDictionary<string, ScrapeStatus> _workload;
     public Action? StatusChanged { get; set; }
     public Func<IWebEntity, Task>? Scraped { get; set; }
-    public int Completed => _workload.Values.Count(status => status != ScrapeStatus.Pending);
-    public int Total => _workload.Values.Count;
-    public int Failed => _workload.Values.Count(status => status == ScrapeStatus.Failure);
+
     public Crawler(Scraper scraper, CancellationToken cancellationToken)
     {
         _scraper = scraper;
@@ -34,15 +32,12 @@ public class Crawler
     private async Task OnSuccess(IWebEntity page)
     {
         _workload[page.Uri.AbsoluteUri] = ScrapeStatus.Success;
-        
-        var tasks = new List<Task>();
 
-        foreach (var resource in page.ListLinkedResources())
-        {
-            if(_workload.TryAdd(resource.AbsoluteUri, ScrapeStatus.Pending))
-                tasks.Add(ScapePage(resource.AbsolutePath));
-        }
- 
+        var resources = page.ListLinkedResources().OrderBy(x => x.AbsolutePath.Length).ToList();
+
+        var tasks = (from resource in resources where _workload.TryAdd(resource.AbsoluteUri, ScrapeStatus.Pending) 
+                        select ScapePage(resource.AbsolutePath)).ToList();
+
         StatusChanged?.Invoke();
         Scraped?.Invoke(page);
 
@@ -57,5 +52,27 @@ public class Crawler
     private async Task ScapePage(string path)
     {  
         await _scraper.Scrape(path, _cancellationToken);
+    }
+
+    public CrawlerStatus GetStatus()
+    {
+        var completedCount = 0;
+        var failedCount = 0;
+        var pendingCount = 0;
+        var totalCount = _workload.Count;
+
+        foreach (var status in _workload.Values)
+        {
+            if (status != ScrapeStatus.Pending)
+                completedCount++;
+            
+            if (status == ScrapeStatus.Failure)
+                failedCount++;
+
+            if (status == ScrapeStatus.Pending)
+                pendingCount++;
+        }
+
+        return new CrawlerStatus(completedCount, totalCount, failedCount, pendingCount);
     }
 }
