@@ -5,11 +5,9 @@ namespace LeetScraper.Core;
 
 public class Crawler
 {
-    private readonly Scraper _scraper;
     private readonly CancellationToken _cancellationToken;
-    private ConcurrentDictionary<string, ScrapeStatus> _workload;
-    public Action? StatusChanged { get; set; }
-    public Func<IWebEntity, Task>? Scraped { get; set; }
+    private readonly Scraper _scraper;
+    private readonly ConcurrentDictionary<string, ScrapeStatus> _workload;
 
     public Crawler(Scraper scraper, CancellationToken cancellationToken)
     {
@@ -20,12 +18,15 @@ public class Crawler
         _workload = new ConcurrentDictionary<string, ScrapeStatus>();
     }
 
+    public Action? StatusChanged { get; set; }
+    public Func<IWebEntity, Task>? Scraped { get; set; }
+
     private Task OnFailure(IWebEntity entity)
     {
         _workload[entity.Uri.AbsoluteUri] = ScrapeStatus.Failure;
-        
+
         StatusChanged?.Invoke();
-        
+
         return Task.CompletedTask;
     }
 
@@ -35,8 +36,9 @@ public class Crawler
 
         var resources = page.ListLinkedResources();
 
-        var tasks = (from resource in resources where _workload.TryAdd(resource.AbsoluteUri, ScrapeStatus.Pending) 
-                        select ScapePage(resource.AbsolutePath)).ToList();
+        var tasks = (from resource in resources
+            where _workload.TryAdd(resource.AbsoluteUri, ScrapeStatus.Pending)
+            select ScapePage(resource.AbsolutePath)).ToList();
 
         StatusChanged?.Invoke();
         Scraped?.Invoke(page);
@@ -48,9 +50,9 @@ public class Crawler
     {
         await ScapePage("");
     }
-    
+
     private async Task ScapePage(string path)
-    {  
+    {
         await _scraper.Scrape(path, _cancellationToken);
     }
 
@@ -65,7 +67,7 @@ public class Crawler
         {
             if (status != ScrapeStatus.Pending)
                 completedCount++;
-            
+
             if (status == ScrapeStatus.Failure)
                 failedCount++;
 

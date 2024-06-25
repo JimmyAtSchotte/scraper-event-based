@@ -3,28 +3,32 @@
 public abstract class WebEntity : IWebEntity
 {
     private byte[] _bytes;
-    
-    public Uri Uri { get; }
-   
-    
+
+
     protected WebEntity(byte[] bytes, Uri uri)
     {
         _bytes = bytes;
         Uri = uri;
     }
-    
-    public abstract IEnumerable<Uri> ListLinkedResources();
-    public Stream CreateStream() => new MemoryStream(_bytes);
 
-    private void ReleaseUnmanagedResources()
+    public Uri Uri { get; }
+
+    public abstract IEnumerable<Uri> ListLinkedResources();
+
+    public Stream CreateStream()
     {
-        _bytes = [];
+        return new MemoryStream(_bytes);
     }
 
     public void Dispose()
     {
         ReleaseUnmanagedResources();
         GC.SuppressFinalize(this);
+    }
+
+    private void ReleaseUnmanagedResources()
+    {
+        _bytes = [];
     }
 
     ~WebEntity()

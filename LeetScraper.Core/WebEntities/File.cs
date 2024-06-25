@@ -2,9 +2,10 @@ namespace LeetScraper.Core.WebEntities;
 
 public class File : WebEntity
 {
-    public File(byte[] bytes, Uri uri) : base(bytes, uri)
+    public File(byte[] bytes, Uri uri) : base(bytes, uri) { }
+
+    public override IEnumerable<Uri> ListLinkedResources()
     {
-        
+        return [];
     }
-    public override IEnumerable<Uri> ListLinkedResources() => [];
 }
