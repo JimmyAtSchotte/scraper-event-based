@@ -2,30 +2,29 @@
 
 namespace LeetScraper.Core.WebEntities;
 
-public class HtmlPage : IWebEntity
+public class HtmlPage : WebEntity
 {
+    private byte[] _bytes;
+    
     private const string DefaultAttribute = "";
     
-    private readonly HtmlDocument _htmlDocument;
-    
-    public HtmlPage(byte[] bytes, Uri uri)
+    public HtmlPage(byte[] bytes, Uri uri) : base(bytes, uri.AbsolutePath.EndsWith("/") ? new Uri(uri, "index.html") : uri)
     {
-        Bytes = bytes;
-        Uri = uri.AbsolutePath.EndsWith("/") ? new Uri(uri, "index.html") : uri;
-        _htmlDocument = new HtmlDocument();
-        _htmlDocument.Load(new MemoryStream(bytes));
+        
     }
-
-    public Uri Uri { get; }
-    public byte[] Bytes { get; }
-
-    public IEnumerable<Uri> ListLinkedResources()
+    
+    public override IEnumerable<Uri> ListLinkedResources()
     {
+        using var stream = new MemoryStream(Bytes);
+        var htmlDocument = new HtmlDocument();
+        
+        htmlDocument.Load(stream);
+        
         var resources = new List<string>();
-        resources.AddRange(ListLinks());
-        resources.AddRange(ListImages());
-        resources.AddRange(ListCss());
-        resources.AddRange(ListJavascript());
+        resources.AddRange(ListLinks(htmlDocument));
+        resources.AddRange(ListImages(htmlDocument));
+        resources.AddRange(ListCss(htmlDocument));
+        resources.AddRange(ListJavascript(htmlDocument));
         
         return resources
             .Where(x => (x.StartsWith("http://") || x.StartsWith("https://")) == false)   
@@ -34,23 +33,23 @@ public class HtmlPage : IWebEntity
             .Select(resource => new Uri(Uri, resource));
     }
 
-    private IEnumerable<string> ListLinks()
+    private static IEnumerable<string> ListLinks(HtmlDocument htmlDocument)
     {
-        return _htmlDocument.DocumentNode.SelectNodes("//a[@href]")?.Select(linkNode => linkNode.GetAttributeValue("href", DefaultAttribute)) ?? [];
+        return htmlDocument.DocumentNode.SelectNodes("//a[@href]")?.Select(linkNode => linkNode.GetAttributeValue("href", DefaultAttribute)) ?? [];
     }
     
-    private IEnumerable<string> ListImages()
+    private static IEnumerable<string> ListImages(HtmlDocument htmlDocument)
     {
-        return _htmlDocument.DocumentNode.SelectNodes("//img[@src]")?.Select(linkNode => linkNode.GetAttributeValue("src", DefaultAttribute)) ?? [];
+        return htmlDocument.DocumentNode.SelectNodes("//img[@src]")?.Select(linkNode => linkNode.GetAttributeValue("src", DefaultAttribute)) ?? [];
     }
     
-    private IEnumerable<string> ListCss()
+    private static IEnumerable<string> ListCss(HtmlDocument htmlDocument)
     {
-        return _htmlDocument.DocumentNode.SelectNodes("//link[@href]")?.Select(linkNode => linkNode.GetAttributeValue("href",DefaultAttribute)) ?? [];
+        return htmlDocument.DocumentNode.SelectNodes("//link[@href]")?.Select(linkNode => linkNode.GetAttributeValue("href",DefaultAttribute)) ?? [];
     }
     
-    private IEnumerable<string> ListJavascript()
+    private static IEnumerable<string> ListJavascript(HtmlDocument htmlDocument)
     {
-        return _htmlDocument.DocumentNode.SelectNodes("//script[@src]")?.Select(linkNode => linkNode.GetAttributeValue("src", DefaultAttribute)) ?? [];
+        return htmlDocument.DocumentNode.SelectNodes("//script[@src]")?.Select(linkNode => linkNode.GetAttributeValue("src", DefaultAttribute)) ?? [];
     }
 }

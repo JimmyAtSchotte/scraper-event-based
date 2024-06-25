@@ -1,13 +1,10 @@
 ﻿namespace LeetScraper.Core.WebEntities;
 
-public class FailedRequest : IWebEntity
+public class FailedRequest : WebEntity
 {
-    public FailedRequest(byte[] bytes, Uri uri)
+    public FailedRequest(byte[] bytes, Uri uri) : base(bytes, uri)
     {
-        Uri = uri;
-        Bytes = bytes;
+        
     }
-    public Uri Uri { get; }
-    public byte[] Bytes { get; }
-    public IEnumerable<Uri> ListLinkedResources() => [];
+    public override IEnumerable<Uri> ListLinkedResources() => [];
 }

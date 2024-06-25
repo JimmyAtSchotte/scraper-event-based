@@ -1,6 +1,6 @@
 namespace LeetScraper.Core.WebEntities;
 
-public interface IWebEntity
+public interface IWebEntity : IDisposable
 {
     Uri Uri { get; }
     byte[] Bytes { get; }

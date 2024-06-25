@@ -17,8 +17,9 @@ public class Scraper
 
     public async Task Scrape(string path, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetAsync(path, cancellationToken);
         var absoluteUri = new Uri(_httpClient.BaseAddress, path);
+        
+        using var response = await _httpClient.GetAsync(path, cancellationToken);
         var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
 
         if (!response.IsSuccessStatusCode)
@@ -29,7 +30,7 @@ public class Scraper
             return;
         }
         
-        IWebEntity entity = response.Content.Headers.ContentType?.MediaType switch
+        using IWebEntity entity = response.Content.Headers.ContentType?.MediaType switch
         {
             "text/html" => new HtmlPage(bytes, absoluteUri),
             _ => new File(bytes, absoluteUri)
