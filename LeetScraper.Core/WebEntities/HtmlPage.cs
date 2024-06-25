@@ -34,7 +34,8 @@ public class HtmlPage : WebEntity
             .Where(x => (x.StartsWith("http://") || x.StartsWith("https://")) == false)   
             .Where(x => !string.IsNullOrEmpty(x))
             .Where(x => x != DefaultAttribute)
-            .Select(resource => new Uri(Uri, resource));
+            .Select(resource => new Uri(Uri, resource))
+            .ToList();
     }
 
     private static IEnumerable<string> ListLinks(HtmlDocument htmlDocument)
