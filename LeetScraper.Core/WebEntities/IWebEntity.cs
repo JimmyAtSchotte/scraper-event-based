@@ -4,5 +4,5 @@ public interface IWebEntity : IDisposable
 {
     Uri Uri { get; }
     IEnumerable<Uri> ListLinkedResources();
-    Stream GetStream();
+    Stream CreateStream();
 }

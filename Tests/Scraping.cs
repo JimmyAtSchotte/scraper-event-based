@@ -59,7 +59,7 @@ public class Scraping
         {
             scraped = entity;
             using var ms = new MemoryStream();
-            entity.GetStream().CopyTo(ms);
+            entity.CreateStream().CopyTo(ms);
             actualBytes = ms.ToArray();
             return Task.CompletedTask;
         };

@@ -20,6 +20,9 @@ public class LocalFileStorage
         _fileSystem.Directory.CreateDirectory(_fileSystem.Path.GetDirectoryName(filePath));
 
         await using var fileStream = _fileSystem.File.Create(filePath);
-        await webEntity.GetStream().CopyToAsync(fileStream);
+        var stream = webEntity.CreateStream();
+        await stream.CopyToAsync(fileStream);
+        stream.Close();
+        fileStream.Close();
     }
 }

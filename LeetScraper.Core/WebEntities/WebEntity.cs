@@ -1,29 +1,30 @@
-﻿using HtmlAgilityPack;
+﻿using System.IO.Compression;
+using HtmlAgilityPack;
 
 namespace LeetScraper.Core.WebEntities;
 
 public abstract class WebEntity : IWebEntity
 {
-    private readonly Stream _stream;
+    private byte[] _bytes;
     
     public Uri Uri { get; }
+   
     
-    protected WebEntity(Stream stream, Uri uri)
+    protected WebEntity(byte[] bytes, Uri uri)
     {
-        _stream = stream;
+        _bytes = bytes;
         Uri = uri;
     }
+    
     public abstract IEnumerable<Uri> ListLinkedResources();
-    public Stream GetStream()
+    public Stream CreateStream()
     {
-        _stream.Position = 0;
-        return _stream;
+        return new MemoryStream(_bytes);
     }
 
     private void ReleaseUnmanagedResources()
     {
-        _stream?.Close();
-        _stream?.Dispose();
+        _bytes = [];
     }
 
     public void Dispose()
